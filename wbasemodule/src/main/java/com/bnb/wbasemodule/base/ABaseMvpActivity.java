@@ -21,7 +21,6 @@ public abstract class ABaseMvpActivity<P extends ABasePresenter> extends ABaseAc
       mPresenter.release();
     }
     super.onDestroy();
-
   }
 
   protected abstract P createPresenter();

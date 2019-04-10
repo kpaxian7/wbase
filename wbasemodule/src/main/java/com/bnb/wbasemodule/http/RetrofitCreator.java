@@ -1,5 +1,7 @@
 package com.bnb.wbasemodule.http;
 
+import android.content.Context;
+
 import com.bnb.wbasemodule.utils.AppUtils;
 
 import java.security.KeyManagementException;
@@ -23,76 +25,80 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitCreator {
 
-  private static Hashtable<String, Retrofit> sRetrofitMap = new Hashtable<>();
-  private static OkHttpClient sOkhttpClient;
+    private static Context sContext;
+    private static String sBaseUrl;
 
-  public static final String BASE_URL = "";
+    private static Hashtable<String, Retrofit> sRetrofitMap = new Hashtable<>();
+    private static OkHttpClient sOkhttpClient;
 
-  public static Retrofit getRetrofitInstance(OkHttpClient client) {
-    Retrofit retrofit = sRetrofitMap.get(BASE_URL);
-    if (retrofit == null) {
-      synchronized (RetrofitCreator.class) {
-        retrofit = sRetrofitMap.get(BASE_URL);
+    public static void init(Context context, String baseUrl) {
+        sContext = context;
+        sBaseUrl = baseUrl;
+    }
+
+    public static Retrofit getRetrofitInstance(OkHttpClient client) {
+        Retrofit retrofit = sRetrofitMap.get(sBaseUrl);
         if (retrofit == null) {
-          retrofit = new Retrofit.Builder()
-              .client(client == null ? getOkHttpClient() : client)
-              .baseUrl(BASE_URL)
-              .addConverterFactory(GsonConverterFactory.create())
-              .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-              .build();
-          sRetrofitMap.put(BASE_URL, retrofit);
+            synchronized (RetrofitCreator.class) {
+                retrofit = sRetrofitMap.get(sBaseUrl);
+                if (retrofit == null) {
+                    retrofit = new Retrofit.Builder()
+                            .client(client == null ? getOkHttpClient() : client)
+                            .baseUrl(sBaseUrl)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                            .build();
+                    sRetrofitMap.put(sBaseUrl, retrofit);
+                }
+            }
         }
-      }
+        return retrofit;
     }
-    return retrofit;
-  }
 
-  private static OkHttpClient getOkHttpClient() {
-    if (sOkhttpClient == null) {
-      // OkHttp3
-      OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
-//      okHttpBuilder.addInterceptor(CommonParametersInterceptor.getInstance());
-      if (AppUtils.isDebug()) {
-//        okHttpBuilder.addInterceptor(new RedirectionInterceptor());
-        okHttpBuilder.addInterceptor(new LoggerInterceptor());
-      }
-      okHttpBuilder.retryOnConnectionFailure(false);
-      try {
-        final X509TrustManager trustManager = new X509TrustManager() {
-          @Override
-          public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-          }
+    private static OkHttpClient getOkHttpClient() {
+        if (sOkhttpClient == null) {
+            // OkHttp3
+            OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
+            if (AppUtils.isDebug()) {
+                okHttpBuilder.addInterceptor(new LoggerInterceptor());
+            }
+            okHttpBuilder.retryOnConnectionFailure(false);
+            try {
+                final X509TrustManager trustManager = new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    }
 
-          @Override
-          public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-          }
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    }
 
-          @Override
-          public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[0];
-          }
-        };
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+                };
 
-        SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, new TrustManager[]{trustManager}, new SecureRandom());
-        SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
-        okHttpBuilder
-            .sslSocketFactory(sslSocketFactory, trustManager)
-            .hostnameVerifier(new HostnameVerifier() {
-              @Override
-              public boolean verify(String hostname, SSLSession session) {
-                return true;
-              }
-            })
-            .build();
-      } catch (NoSuchAlgorithmException e) {
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+                SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
+                okHttpBuilder
+                        .sslSocketFactory(sslSocketFactory, trustManager)
+                        .hostnameVerifier(new HostnameVerifier() {
+                            @Override
+                            public boolean verify(String hostname, SSLSession session) {
+                                return true;
+                            }
+                        })
+                        .build();
+            } catch (NoSuchAlgorithmException e) {
 
-      } catch (KeyManagementException e) {
+            } catch (KeyManagementException e) {
 
-      }
-      sOkhttpClient = okHttpBuilder.build();
+            }
+            sOkhttpClient = okHttpBuilder.build();
 
+        }
+        return sOkhttpClient;
     }
-    return sOkhttpClient;
-  }
 }
