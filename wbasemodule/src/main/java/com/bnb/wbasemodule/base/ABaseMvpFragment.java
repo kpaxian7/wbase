@@ -2,12 +2,12 @@ package com.bnb.wbasemodule.base;
 
 import android.os.Bundle;
 
-public abstract class ABaseMvpActivity<P extends ABasePresenter> extends ABaseActivity {
+public abstract class ABaseMvpFragment<P extends IPresenter> extends ABaseFragment {
 
     protected P mPresenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         mPresenter = createPresenter();
         if (mPresenter == null) {
             throw new IllegalArgumentException("Presenter == null");
@@ -16,7 +16,7 @@ public abstract class ABaseMvpActivity<P extends ABasePresenter> extends ABaseAc
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (mPresenter != null) {
             mPresenter.release();
         }

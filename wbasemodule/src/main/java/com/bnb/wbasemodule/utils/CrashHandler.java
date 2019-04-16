@@ -21,9 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Author by wzl, Date on 2019/3/29.
- */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private static CrashHandler mInstance;

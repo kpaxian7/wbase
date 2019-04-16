@@ -1,11 +1,9 @@
 package com.bnb.wbasemodule.base;
 
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
 import com.bnb.wbasemodule.R;
 import com.bnb.wbasemodule.bean.BaseListBean;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -13,11 +11,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.List;
 
-/**
- * Author by wzl, Date on 2019/4/9.
- */
-public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdapter<B, BaseViewHolder>,
-        P extends ABasePresenter> extends ABaseMvpActivity<P>
+public abstract class ABaseRefreshAndLoadMoreFragment<B, A extends BaseQuickAdapter<B, BaseViewHolder>,
+        P extends ABasePresenter> extends ABaseMvpFragment<P>
         implements IRefreshView<B> {
 
     private int mDefEmptyId = R.layout.layout_base_empty;
@@ -33,9 +28,9 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
     protected int mCurrentIndex = INIT_INDEX;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initView() {
         initRecycler(getRecycler());
+        mRv = getRecycler();
         mSwipe = getSwipeRefreshLayout();
         mAdapter = initAdapter();
         mAdapter.bindToRecyclerView(mRv);
@@ -43,9 +38,9 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
         if (getEmptyView() != null) {
             mEmptyView = getEmptyView();
         } else if (getEmptyViewId() != NO_EMPTY_ID) {
-            mEmptyView = View.inflate(this, getEmptyViewId(), null);
+            mEmptyView = View.inflate(mActivity, getEmptyViewId(), null);
         } else {
-            mEmptyView = View.inflate(this, mDefEmptyId, null);
+            mEmptyView = View.inflate(mActivity, mDefEmptyId, null);
         }
     }
 
@@ -80,10 +75,10 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
     }
 
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(this);
+        return new LinearLayoutManager(mActivity);
     }
 
-    protected void onItemChildClick(View v, int pos) {
+    private void onItemChildClick(View view, int position) {
 
     }
 
@@ -114,7 +109,6 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
         }
     }
 
-
     @Override
     public void getListDataFail() {
         if (mSwipe != null) mSwipe.setRefreshing(false);
@@ -138,4 +132,5 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
     abstract void onItemClick(View v, int pos);
 
     abstract void getData();
+
 }

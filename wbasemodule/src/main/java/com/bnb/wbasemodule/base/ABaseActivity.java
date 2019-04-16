@@ -18,6 +18,7 @@ import io.reactivex.observers.DisposableObserver;
 public abstract class ABaseActivity extends AppCompatActivity {
 
     private CompositeDisposable mDisposable;
+    private View mFlLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +50,18 @@ public abstract class ABaseActivity extends AppCompatActivity {
         hideSoftInputActivity();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mDisposable != null) {
-            mDisposable.clear();
+    /**
+     * 布局中包含 R.id.fl_loading
+     */
+    protected void showLoadingView() {
+        if (mFlLoading == null) {
+            mFlLoading = findViewById(R.id.fl_loading);
         }
-        super.onDestroy();
+        mFlLoading.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideLoadingView() {
+        mFlLoading.setVisibility(View.GONE);
     }
 
     protected <T> void addSubscription(Observable<T> observable, DisposableObserver<T> observer) {
@@ -77,6 +84,14 @@ public abstract class ABaseActivity extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        if (mDisposable != null) {
+            mDisposable.clear();
+        }
+        super.onDestroy();
     }
 
     /**

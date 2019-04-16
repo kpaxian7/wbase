@@ -1,11 +1,9 @@
 package com.bnb.wbasemodule.utils;
 
-import com.google.gson.Gson;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

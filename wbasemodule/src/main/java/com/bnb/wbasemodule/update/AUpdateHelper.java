@@ -125,6 +125,12 @@ public abstract class AUpdateHelper {
         }
     }
 
+    /**
+     * SAMPLE
+     * return {@link #getUpdateRetrofit()}
+     * .create(UpdateService.class)
+     * .update("/download/newVersion.apk");
+     */
     protected abstract Call<ResponseBody> getUpdateCall();
 
     protected abstract String getFilePath();
