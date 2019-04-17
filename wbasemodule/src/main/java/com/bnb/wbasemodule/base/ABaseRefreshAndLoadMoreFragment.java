@@ -4,6 +4,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
 import com.bnb.wbasemodule.R;
 import com.bnb.wbasemodule.bean.BaseListBean;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -119,18 +120,18 @@ public abstract class ABaseRefreshAndLoadMoreFragment<B, A extends BaseQuickAdap
         }
     }
 
-    abstract A initAdapter();
+    protected abstract A initAdapter();
 
-    abstract RecyclerView getRecycler();
+    protected abstract RecyclerView getRecycler();
 
-    abstract SwipeRefreshLayout getSwipeRefreshLayout();
+    protected abstract SwipeRefreshLayout getSwipeRefreshLayout();
 
-    abstract View getEmptyView();
+    protected abstract View getEmptyView();
 
-    abstract int getEmptyViewId();
+    protected abstract int getEmptyViewId();
 
-    abstract void onItemClick(View v, int pos);
+    protected abstract void onItemClick(View v, int pos);
 
-    abstract void getData();
+    protected abstract void getData();
 
 }

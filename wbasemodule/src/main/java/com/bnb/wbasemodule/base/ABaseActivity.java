@@ -85,7 +85,7 @@ public abstract class ABaseActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     @Override
     protected void onDestroy() {
         if (mDisposable != null) {
@@ -101,5 +101,5 @@ public abstract class ABaseActivity extends AppCompatActivity {
         return false;
     }
 
-    abstract int getContentId();
+    protected abstract int getContentId();
 }
