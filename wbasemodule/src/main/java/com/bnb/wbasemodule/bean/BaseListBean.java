@@ -2,10 +2,12 @@ package com.bnb.wbasemodule.bean;
 
 import java.util.List;
 
-/**
- * Author by wzl, Date on 2019/4/10.
- */
-public abstract class BaseListBean<T> {
+public abstract class BaseListBean<T> extends BaseBean<T> {
 
-    public abstract List<T> getData();
+    abstract List<T> getListData();
+
+    @Override
+    public T getData() {
+        return null;
+    }
 }
