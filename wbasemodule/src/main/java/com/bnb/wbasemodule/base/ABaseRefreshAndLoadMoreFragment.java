@@ -85,8 +85,8 @@ public abstract class ABaseRefreshAndLoadMoreFragment<B, A extends BaseQuickAdap
     @Override
     public void getListDataSuc(BaseListBean<B> bean) {
         if (mSwipe != null) mSwipe.setRefreshing(false);
-        if (bean != null && bean.getData() != null && !bean.getData().isEmpty()) {
-            List<B> data = bean.getData();
+        if (bean != null && bean.getListData() != null && !bean.getListData().isEmpty()) {
+            List<B> data = bean.getListData();
             if (mCurrentIndex == INIT_INDEX) {
                 mAdapter.setNewData(data);
             } else {
