@@ -2,7 +2,7 @@ package com.bnb.wbasemodule.base;
 
 import android.os.Bundle;
 
-public abstract class ABaseMvpActivity<P extends ABasePresenter> extends ABaseActivity {
+public abstract class ABaseMvpActivity<P extends IPresenter> extends ABaseActivity {
 
     protected P mPresenter;
 
