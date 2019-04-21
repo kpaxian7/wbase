@@ -1,6 +1,7 @@
 package com.bnb.wbasemodule.update;
 
 import android.content.Context;
+import android.os.Environment;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -125,6 +126,11 @@ public abstract class AUpdateHelper {
         }
     }
 
+    private String getFilePath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/Android/data/" + getPkgName() + "/down/newVersion.apk";
+    }
+
     /**
      * SAMPLE
      * return {@link #getUpdateRetrofit()}
@@ -132,8 +138,6 @@ public abstract class AUpdateHelper {
      * .update("/download/newVersion.apk");
      */
     protected abstract Call<ResponseBody> getUpdateCall();
-
-    protected abstract String getFilePath();
 
     protected abstract String getPkgName();
 
