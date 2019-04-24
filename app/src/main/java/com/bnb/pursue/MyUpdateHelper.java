@@ -1,24 +1,17 @@
 package com.bnb.pursue;
 
 import android.content.Context;
-import android.os.Environment;
 
+import com.bnb.wbasemodule.update.AUpdateDialog;
 import com.bnb.wbasemodule.update.AUpdateHelper;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 
 public class MyUpdateHelper extends AUpdateHelper {
 
+    private Context mContext;
+
     public MyUpdateHelper(Context context) {
         super(context);
-    }
-
-    @Override
-    protected Call<ResponseBody> getUpdateCall() {
-        return getUpdateRetrofit()
-                .create(UpdateService.class)
-                .update("/download/traveller.apk");
+        mContext = context;
     }
 
     @Override
@@ -32,7 +25,12 @@ public class MyUpdateHelper extends AUpdateHelper {
     }
 
     @Override
-    protected String getBaseUrl() {
-        return "http://www.8lala.top";
+    protected String getDownloadUrl() {
+        return "http://www.8lala.top/download/traveller.apk";
     }
+
+//    @Override
+//    protected AUpdateDialog initDialog() {
+//        return new MyTestDialog(mContext, this);
+//    }
 }

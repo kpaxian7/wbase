@@ -4,12 +4,6 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.bnb.wbasemodule.dialog.BaseDialog;
-import com.bnb.wbasemodule.update.UpdateDialog;
-import com.google.gson.Gson;
 
 import java.io.File;
 
