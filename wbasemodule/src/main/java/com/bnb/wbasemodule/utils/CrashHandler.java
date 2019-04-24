@@ -50,7 +50,12 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         saveEx2File(ex);
-        mHandler.uncaughtException(thread, ex);
+        if (mHandler != null) {
+            mHandler.uncaughtException(thread, ex);
+        } else {
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+        }
     }
 
     private StringBuffer formatExceptionInfo(Throwable ex) {

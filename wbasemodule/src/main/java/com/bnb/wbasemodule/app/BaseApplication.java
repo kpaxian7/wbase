@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.bnb.wbasemodule.http.RetrofitCreator;
 import com.bnb.wbasemodule.utils.ActivityManager;
 import com.bnb.wbasemodule.utils.CrashHandler;
 import com.bnb.wbasemodule.utils.ToastUtils;

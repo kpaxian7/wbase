@@ -1,13 +1,10 @@
 package com.bnb.wbasemodule.update;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +18,13 @@ import com.bnb.wbasemodule.R;
 
 import java.io.File;
 
-public class UpdateDialog extends Dialog implements UpdateListener {
+public class DefaultUpdateDialog extends AUpdateDialog {
 
     private static final String MODE_UPDATING = "MODE_UPDATING";
     private static final String MODE_ACTION = "MODE_ACTION";
 
-    private static final int UPDATE_START = 101;
-    private static final int UPDATE_ING = 102;
-    private static final int UPDATE_FAIL = 103;
-    private static final int UPDATE_FINISH = 104;
-
     private ImageView mIvIcon;
+    private TextView mTvUpdateTitle;
     private TextView mTvUpdateTips;
     private ProgressBar mProgress;
     private TextView mTvProgressNum;
@@ -45,53 +38,33 @@ public class UpdateDialog extends Dialog implements UpdateListener {
 
     private boolean mIsForce;
     private int mIconRes;
-    private View.OnClickListener mSureListener;
+    private String mStrUpdateTitle;
+    private String mStrUpdateDesc;
 
-    @SuppressWarnings("handlerLeak")
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case UPDATE_START:
-                    mProgress.setProgress(0);
-                    changeMode(MODE_UPDATING);
-                    break;
-                case UPDATE_ING:
-                    int pro = (int) msg.obj;
-                    mProgress.setProgress(pro);
-                    mTvProgressNum.setText(pro + "%");
-                    break;
-                case UPDATE_FAIL:
-                    break;
-                case UPDATE_FINISH:
-                    installApk(mApkPath);
-//          dismiss();
-                    break;
-            }
-
-        }
-    };
-
-    UpdateDialog(Context context, String apkPath, String pkgName) {
-        super(context, R.style.BaseDialog);
+    DefaultUpdateDialog(AUpdateHelper helper, Context context, String apkPath, String pkgName) {
+        super(context, R.style.BaseDialog, helper);
         mContext = context;
         mApkPath = apkPath;
         mPkgName = pkgName;
     }
 
-    UpdateDialog isForce(boolean isForce) {
+    DefaultUpdateDialog isForce(boolean isForce) {
         mIsForce = isForce;
         return this;
     }
 
-    UpdateDialog setIconRes(int res) {
+    DefaultUpdateDialog setIconRes(int res) {
         mIconRes = res;
         return this;
     }
 
-    UpdateDialog setOnSureListener(View.OnClickListener listener) {
-        mSureListener = listener;
+    DefaultUpdateDialog setUpdateTitle(String str) {
+        mStrUpdateTitle = str;
+        return this;
+    }
+
+    DefaultUpdateDialog setUpdateDesc(String str) {
+        mStrUpdateDesc = str;
         return this;
     }
 
@@ -101,6 +74,7 @@ public class UpdateDialog extends Dialog implements UpdateListener {
         setContentView(R.layout.dialog_update);
         initView();
         initListener();
+        setValue();
 
         Window window = getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -113,17 +87,25 @@ public class UpdateDialog extends Dialog implements UpdateListener {
         mTvCancel.setOnClickListener(v -> {
             dismiss();
         });
-        mTvSure.setOnClickListener(mSureListener);
+        mTvSure.setOnClickListener(v -> {
+            mHelper.doUpdate();
+        });
     }
 
     private void initView() {
         mIvIcon = findViewById(R.id.iv_icon);
+        mTvUpdateTitle = findViewById(R.id.tv_update_title);
         mTvUpdateTips = findViewById(R.id.tv_update_tips);
         mProgress = findViewById(R.id.pb);
         mTvProgressNum = findViewById(R.id.tv_pb_num);
         mLlAction = findViewById(R.id.ll_action);
         mTvCancel = findViewById(R.id.tv_cancel);
         mTvSure = findViewById(R.id.tv_sure);
+    }
+
+    private void setValue() {
+        mTvUpdateTitle.setText(mStrUpdateTitle);
+        mTvUpdateTips.setText(mStrUpdateDesc);
     }
 
     @Override
@@ -141,29 +123,23 @@ public class UpdateDialog extends Dialog implements UpdateListener {
     }
 
     @Override
-    public void onStartDown() {
-        mHandler.sendEmptyMessage(UPDATE_START);
+    protected void onUpdateStart() {
+        mProgress.setProgress(0);
+        changeMode(MODE_UPDATING);
     }
 
     @Override
-    public void onFail(String failMsg) {
-        mHandler.sendEmptyMessage(UPDATE_FAIL);
+    protected void onUpdateProgress(int progress) {
+        mProgress.setProgress(progress);
+        mTvProgressNum.setText(progress + "%");
     }
 
     @Override
-    public void onProgress(int pro) {
-        Message msg = new Message();
-        msg.obj = pro;
-        msg.what = UPDATE_ING;
-        mHandler.sendMessage(msg);
+    protected void onUpdateFinish() {
+        installApk(mApkPath);
     }
 
-    @Override
-    public void onFinish(String path) {
-        mHandler.sendEmptyMessage(UPDATE_FINISH);
-    }
-
-    public void installApk(final String path) {
+    protected void installApk(final String path) {
         File apkFile = new File(path);
         if (!apkFile.exists()) {
             return;

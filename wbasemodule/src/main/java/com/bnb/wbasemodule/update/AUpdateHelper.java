@@ -2,6 +2,9 @@ package com.bnb.wbasemodule.update;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
+
+import com.bnb.wbasemodule.R;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -11,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Executors;
 
+import okhttp3.HttpUrl;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,47 +24,52 @@ import retrofit2.Retrofit;
 public abstract class AUpdateHelper {
 
     private Context mContext;
-    private int mIconRes;
     private String mPath;
     private String mBaseUrl;
+    private String mUrlPath;
     private String mPkgName;
-    private Call<ResponseBody> mCall;
-    private UpdateDialog mDialog;
+    private AUpdateDialog mDialog;
 
     private static int sBufferSize = 8192;
 
     public AUpdateHelper(Context context) {
         mContext = context;
-        mIconRes = getIconRes();
         mPath = getFilePath();
-        mBaseUrl = getBaseUrl();
         mPkgName = getPkgName();
-        mCall = getUpdateCall();
-        mDialog = initDialog();
+        convertDownloadUrl(getDownloadUrl());
     }
 
-    private UpdateDialog initDialog() {
-        return new UpdateDialog(mContext, mPath, mPkgName)
-                .setIconRes(mIconRes)
-                .isForce(true)
-                .setOnSureListener(v -> {
-                    doUpdate();
-                });
+    private void convertDownloadUrl(String downloadUrl) {
+        HttpUrl httpUrl = HttpUrl.parse(downloadUrl);
+        if (httpUrl != null) {
+            String host = httpUrl.host();
+            mBaseUrl = downloadUrl.substring(0, downloadUrl.indexOf(host) + host.length());
+            mUrlPath = downloadUrl.substring(mBaseUrl.length());
+        }
     }
 
-    protected Retrofit getUpdateRetrofit() {
+    private Retrofit getUpdateRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .callbackExecutor(Executors.newSingleThreadExecutor())
                 .build();
     }
 
+    private Call<ResponseBody> getCall() {
+        return getUpdateRetrofit()
+                .create(IUpdateService.class)
+                .update(mUrlPath);
+    }
+
     public void startUpdate() {
-        mDialog.show();
+        if (!TextUtils.isEmpty(mBaseUrl)) {
+            mDialog = initDialog();
+            mDialog.show();
+        }
     }
 
     public void doUpdate() {
-        mCall.enqueue(new Callback<ResponseBody>() {
+        getCall().enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 writeResponseToDisk(mPath, response);
@@ -126,22 +135,37 @@ public abstract class AUpdateHelper {
         }
     }
 
+    /**
+     * 需要自定义dialog，重写该方法，return一个AUpdateDialog子类
+     */
+    protected AUpdateDialog initDialog() {
+        return new DefaultUpdateDialog(this, mContext, mPath, mPkgName)
+                .setIconRes(getIconRes())
+                .isForce(isForce())
+                .setUpdateTitle(getUpdateTitle())
+                .setUpdateDesc(getUpdateDesc());
+    }
+
     private String getFilePath() {
         return Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/Android/data/" + getPkgName() + "/down/newVersion.apk";
     }
 
-    /**
-     * SAMPLE
-     * return {@link #getUpdateRetrofit()}
-     * .create(UpdateService.class)
-     * .update("/download/newVersion.apk");
-     */
-    protected abstract Call<ResponseBody> getUpdateCall();
+    protected String getUpdateTitle() {
+        return mContext.getString(R.string.new_version_found);
+    }
+
+    protected String getUpdateDesc() {
+        return mContext.getString(R.string.update_desc);
+    }
+
+    protected boolean isForce() {
+        return true;
+    }
 
     protected abstract String getPkgName();
 
     protected abstract int getIconRes();
 
-    protected abstract String getBaseUrl();
+    protected abstract String getDownloadUrl();
 }
