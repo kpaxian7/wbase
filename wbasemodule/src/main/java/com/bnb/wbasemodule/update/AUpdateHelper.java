@@ -43,6 +43,9 @@ public abstract class AUpdateHelper {
         HttpUrl httpUrl = HttpUrl.parse(downloadUrl);
         if (httpUrl != null) {
             String host = httpUrl.host();
+            if (TextUtils.isEmpty(host)) {
+                throw new IllegalArgumentException("unknown url");
+            }
             mBaseUrl = downloadUrl.substring(0, downloadUrl.indexOf(host) + host.length());
             mUrlPath = downloadUrl.substring(mBaseUrl.length());
         }

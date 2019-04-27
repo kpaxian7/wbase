@@ -2,7 +2,6 @@ package com.bnb.pursue;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -44,7 +43,8 @@ public class MyTestDialog extends AUpdateDialog {
     }
 
     @Override
-    protected void onUpdateFinish() {
-
+    protected String getFileProviderAuthorities() {
+        return "com.bnb.pursue.FileProvider";
     }
+
 }

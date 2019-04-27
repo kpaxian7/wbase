@@ -2,10 +2,16 @@ package com.bnb.wbasemodule.update;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.FileProvider;
 
 import com.bnb.wbasemodule.R;
+
+import java.io.File;
 
 public abstract class AUpdateDialog extends Dialog implements UpdateListener {
 
@@ -14,6 +20,7 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
     private static final int UPDATE_FAIL = 103;
     private static final int UPDATE_FINISH = 104;
 
+    protected Context mContext;
     protected AUpdateHelper mHelper;
 
     @SuppressWarnings("handlerLeak")
@@ -33,7 +40,8 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
                     onUpdateFail();
                     break;
                 case UPDATE_FINISH:
-                    onUpdateFinish();
+                    String path = (String) msg.obj;
+                    onUpdateFinish(path);
                     break;
             }
 
@@ -46,6 +54,7 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
 
     public AUpdateDialog(Context context, int themeResId, AUpdateHelper helper) {
         super(context, themeResId);
+        mContext = context;
         mHelper = helper;
     }
 
@@ -69,7 +78,10 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
 
     @Override
     public void onFinish(String path) {
-        mHandler.sendEmptyMessage(UPDATE_FINISH);
+        Message msg = new Message();
+        msg.obj = path;
+        msg.what = UPDATE_FINISH;
+        mHandler.sendMessage(msg);
     }
 
     protected abstract void onUpdateStart();
@@ -80,5 +92,28 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
 
     protected abstract void onUpdateProgress(int progress);
 
-    protected abstract void onUpdateFinish();
+    protected void onUpdateFinish(String path) {
+        installApk(path);
+    }
+
+    protected void installApk(String path) {
+        File apkFile = new File(path);
+        if (!apkFile.exists()) {
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        if (Build.VERSION.SDK_INT >= 24) {//7.0+安装方式不同
+            Uri apkUri = FileProvider.getUriForFile(mContext, getFileProviderAuthorities(), apkFile);
+            i.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            i.setDataAndType(Uri.fromFile(apkFile),
+                    "application/vnd.android.package-archive");
+        }
+        mContext.startActivity(i);
+    }
+
+    protected abstract String getFileProviderAuthorities();
 }
