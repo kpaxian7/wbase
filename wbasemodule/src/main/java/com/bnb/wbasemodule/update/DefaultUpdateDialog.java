@@ -26,38 +26,8 @@ public class DefaultUpdateDialog extends AUpdateDialog {
     private TextView mTvCancel;
     private TextView mTvSure;
 
-    private String mApkPath;
-    private String mPkgName;
-
-    private boolean mIsForce;
-    private int mIconRes;
-    private String mStrUpdateTitle;
-    private String mStrUpdateDesc;
-
-    DefaultUpdateDialog(AUpdateHelper helper, Context context, String apkPath, String pkgName) {
-        super(context, R.style.BaseDialog, helper);
-        mApkPath = apkPath;
-        mPkgName = pkgName;
-    }
-
-    DefaultUpdateDialog isForce(boolean isForce) {
-        mIsForce = isForce;
-        return this;
-    }
-
-    DefaultUpdateDialog setIconRes(int res) {
-        mIconRes = res;
-        return this;
-    }
-
-    DefaultUpdateDialog setUpdateTitle(String str) {
-        mStrUpdateTitle = str;
-        return this;
-    }
-
-    DefaultUpdateDialog setUpdateDesc(String str) {
-        mStrUpdateDesc = str;
-        return this;
+    DefaultUpdateDialog(AUpdateHelper helper, Context context) {
+        super(context, helper);
     }
 
     @Override
@@ -70,9 +40,9 @@ public class DefaultUpdateDialog extends AUpdateDialog {
 
         Window window = getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        setCancelable(!mIsForce);
-        mTvCancel.setVisibility(mIsForce ? View.GONE : View.VISIBLE);
-        mIvIcon.setImageResource(mIconRes);
+        setCancelable(!mHelper.isForce());
+        mTvCancel.setVisibility(mHelper.isForce() ? View.GONE : View.VISIBLE);
+        mIvIcon.setImageResource(mHelper.getIconRes());
     }
 
     private void initListener() {
@@ -96,8 +66,8 @@ public class DefaultUpdateDialog extends AUpdateDialog {
     }
 
     private void setValue() {
-        mTvUpdateTitle.setText(mStrUpdateTitle);
-        mTvUpdateTips.setText(mStrUpdateDesc);
+        mTvUpdateTitle.setText(mHelper.getUpdateTitle());
+        mTvUpdateTips.setText(mHelper.getUpdateDesc());
     }
 
     @Override
@@ -129,11 +99,6 @@ public class DefaultUpdateDialog extends AUpdateDialog {
     @Override
     protected void onUpdateFinish(String path) {
         super.onUpdateFinish(path);
-    }
-
-    @Override
-    protected String getFileProviderAuthorities() {
-        return "com.bnb.pursue.FileProvider";
     }
 
     private void changeMode(String mode) {

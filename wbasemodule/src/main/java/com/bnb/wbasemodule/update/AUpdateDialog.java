@@ -93,27 +93,7 @@ public abstract class AUpdateDialog extends Dialog implements UpdateListener {
     protected abstract void onUpdateProgress(int progress);
 
     protected void onUpdateFinish(String path) {
-        installApk(path);
+        mHelper.installApk(path);
     }
 
-    protected void installApk(String path) {
-        File apkFile = new File(path);
-        if (!apkFile.exists()) {
-            return;
-        }
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //添加这一句表示对目标应用临时授权该Uri所代表的文件
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        if (Build.VERSION.SDK_INT >= 24) {//7.0+安装方式不同
-            Uri apkUri = FileProvider.getUriForFile(mContext, getFileProviderAuthorities(), apkFile);
-            i.setDataAndType(apkUri, "application/vnd.android.package-archive");
-        } else {
-            i.setDataAndType(Uri.fromFile(apkFile),
-                    "application/vnd.android.package-archive");
-        }
-        mContext.startActivity(i);
-    }
-
-    protected abstract String getFileProviderAuthorities();
 }

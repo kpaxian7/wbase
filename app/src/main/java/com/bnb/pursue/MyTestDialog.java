@@ -42,9 +42,4 @@ public class MyTestDialog extends AUpdateDialog {
         mPb.setProgress(progress);
     }
 
-    @Override
-    protected String getFileProviderAuthorities() {
-        return "com.bnb.pursue.FileProvider";
-    }
-
 }

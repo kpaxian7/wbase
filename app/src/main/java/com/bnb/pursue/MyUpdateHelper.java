@@ -2,16 +2,12 @@ package com.bnb.pursue;
 
 import android.content.Context;
 
-import com.bnb.wbasemodule.update.AUpdateDialog;
 import com.bnb.wbasemodule.update.AUpdateHelper;
 
 public class MyUpdateHelper extends AUpdateHelper {
 
-    private Context mContext;
-
     public MyUpdateHelper(Context context) {
         super(context);
-        mContext = context;
     }
 
     @Override
@@ -27,6 +23,11 @@ public class MyUpdateHelper extends AUpdateHelper {
     @Override
     protected String getDownloadUrl() {
         return "http://www.8lala.top/download/traveller.apk";
+    }
+
+    @Override
+    protected String getFileProviderAuthorities() {
+        return "com.bnb.pursue.FileProvider";
     }
 
 //    @Override

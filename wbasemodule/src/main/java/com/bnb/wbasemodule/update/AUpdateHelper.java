@@ -1,7 +1,11 @@
 package com.bnb.wbasemodule.update;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.bnb.wbasemodule.R;
@@ -27,7 +31,6 @@ public abstract class AUpdateHelper {
     private String mPath;
     private String mBaseUrl;
     private String mUrlPath;
-    private String mPkgName;
     private AUpdateDialog mDialog;
 
     private static int sBufferSize = 8192;
@@ -35,7 +38,6 @@ public abstract class AUpdateHelper {
     public AUpdateHelper(Context context) {
         mContext = context;
         mPath = getFilePath();
-        mPkgName = getPkgName();
         convertDownloadUrl(getDownloadUrl());
     }
 
@@ -138,15 +140,32 @@ public abstract class AUpdateHelper {
         }
     }
 
+
+    protected void installApk(String path) {
+        File apkFile = new File(path);
+        if (!apkFile.exists()) {
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        if (Build.VERSION.SDK_INT >= 24) {//7.0+安装方式不同
+            Uri apkUri = FileProvider.getUriForFile(mContext, getFileProviderAuthorities(), apkFile);
+            i.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            i.setDataAndType(Uri.fromFile(apkFile),
+                    "application/vnd.android.package-archive");
+        }
+        mContext.startActivity(i);
+    }
+
+
     /**
      * 需要自定义dialog，重写该方法，return一个AUpdateDialog子类
      */
     protected AUpdateDialog initDialog() {
-        return new DefaultUpdateDialog(this, mContext, mPath, mPkgName)
-                .setIconRes(getIconRes())
-                .isForce(isForce())
-                .setUpdateTitle(getUpdateTitle())
-                .setUpdateDesc(getUpdateDesc());
+        return new DefaultUpdateDialog(this, mContext);
     }
 
     private String getFilePath() {
@@ -171,4 +190,6 @@ public abstract class AUpdateHelper {
     protected abstract int getIconRes();
 
     protected abstract String getDownloadUrl();
+
+    protected abstract String getFileProviderAuthorities();
 }
