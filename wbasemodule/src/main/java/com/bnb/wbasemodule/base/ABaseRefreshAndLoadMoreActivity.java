@@ -17,7 +17,7 @@ import java.util.List;
  * Author by wzl, Date on 2019/4/9.
  */
 public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdapter<B, BaseViewHolder>,
-        P extends ABasePresenter> extends ABaseMvpActivity<P>
+        P extends IPresenter> extends ABaseMvpActivity<P>
         implements IRefreshView<B> {
 
     private int mDefEmptyId = R.layout.layout_base_empty;

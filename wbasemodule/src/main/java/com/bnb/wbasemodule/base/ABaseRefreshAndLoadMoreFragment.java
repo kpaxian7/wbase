@@ -13,7 +13,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 public abstract class ABaseRefreshAndLoadMoreFragment<B, A extends BaseQuickAdapter<B, BaseViewHolder>,
-        P extends ABasePresenter> extends ABaseMvpFragment<P>
+        P extends IPresenter> extends ABaseMvpFragment<P>
         implements IRefreshView<B> {
 
     private int mDefEmptyId = R.layout.layout_base_empty;
