@@ -1,6 +1,5 @@
 package com.bnb.wbasemodule.base;
 
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,11 +32,11 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
     protected int mCurrentIndex = INIT_INDEX;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initRecycler(getRecycler());
+    protected void initView() {
+        super.initView();
         mSwipe = getSwipeRefreshLayout();
         mAdapter = initAdapter();
+        initRecycler(getRecycler());
         mAdapter.bindToRecyclerView(mRv);
         mAdapter.setHeaderAndEmpty(true);
         if (getEmptyView() != null) {
