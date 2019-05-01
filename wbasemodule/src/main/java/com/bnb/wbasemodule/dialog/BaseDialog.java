@@ -120,36 +120,44 @@ public class BaseDialog extends Dialog {
             isShowCancel = false;
         }
 
-        public void setTitle(String title) {
+        public Builder setTitle(String title) {
             this.title = title;
+            return this;
         }
 
-        public void setContent(String content) {
+        public Builder setContent(String content) {
             this.content = content;
+            return this;
         }
 
-        public void isTitleBold(boolean isTitleBold) {
+        public Builder isTitleBold(boolean isTitleBold) {
             this.isTitleBold = isTitleBold;
+            return this;
         }
 
-        public void isContentBold(boolean isContentBold) {
+        public Builder isContentBold(boolean isContentBold) {
             this.isContentBold = isContentBold;
+            return this;
         }
 
-        public void isCancelable(boolean isCancelable) {
+        public Builder isCancelable(boolean isCancelable) {
             this.isCancelable = isCancelable;
+            return this;
         }
 
-        public void isShowCancel(boolean isShowCancel) {
+        public Builder isShowCancel(boolean isShowCancel) {
             this.isShowCancel = isShowCancel;
+            return this;
         }
 
-        public void setCancel(String cancel) {
+        public Builder setCancel(String cancel) {
             this.cancel = cancel;
+            return this;
         }
 
-        public void setSure(String sure) {
+        public Builder setSure(String sure) {
             this.sure = sure;
+            return this;
         }
 
         public BaseDialog build() {
