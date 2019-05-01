@@ -24,7 +24,7 @@ public class BaseDialog extends Dialog {
     private TextView mTvSure;
 
     public BaseDialog(Context context, Builder builder) {
-        super(context);
+        super(context, R.style.BaseDialog);
         mContext = context;
         mBuilder = builder;
     }
@@ -55,6 +55,8 @@ public class BaseDialog extends Dialog {
         mTvSure.setOnClickListener(v -> {
             if (mBuilder.clickListener != null) {
                 mBuilder.clickListener.onSure(this);
+            } else {
+                dismiss();
             }
         });
     }
@@ -107,6 +109,10 @@ public class BaseDialog extends Dialog {
         boolean isContentBold;
         boolean isCancelable;
         boolean isShowCancel;
+
+        public Builder(Context context) {
+            this(context, null);
+        }
 
         public Builder(Context context, OnSureClickListener clickListener) {
             this.context = context;
