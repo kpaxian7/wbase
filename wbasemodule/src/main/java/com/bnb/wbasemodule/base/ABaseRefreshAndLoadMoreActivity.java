@@ -124,15 +124,19 @@ public abstract class ABaseRefreshAndLoadMoreActivity<B, A extends BaseQuickAdap
         }
     }
 
+    protected View getEmptyView() {
+        return null;
+    }
+
+    protected int getEmptyViewId() {
+        return -1;
+    }
+
     protected abstract A initAdapter();
 
     protected abstract RecyclerView getRecycler();
 
     protected abstract SwipeRefreshLayout getSwipeRefreshLayout();
-
-    protected abstract View getEmptyView();
-
-    protected abstract int getEmptyViewId();
 
     protected abstract void onItemClick(View v, int pos);
 
