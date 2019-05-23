@@ -37,25 +37,29 @@ public class RetrofitCreator {
     }
 
     public static Retrofit getRetrofitInstance(OkHttpClient client) {
-        Retrofit retrofit = sRetrofitMap.get(sBaseUrl);
+        return getRetrofitInstance(client, sBaseUrl);
+    }
+
+    public static Retrofit getRetrofitInstance(OkHttpClient client, String baseUrl) {
+        Retrofit retrofit = sRetrofitMap.get(baseUrl);
         if (retrofit == null) {
             synchronized (RetrofitCreator.class) {
-                retrofit = sRetrofitMap.get(sBaseUrl);
+                retrofit = sRetrofitMap.get(baseUrl);
                 if (retrofit == null) {
                     retrofit = new Retrofit.Builder()
                             .client(client == null ? getOkHttpClient() : client)
-                            .baseUrl(sBaseUrl)
+                            .baseUrl(baseUrl)
                             .addConverterFactory(GsonConverterFactory.create())
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                             .build();
-                    sRetrofitMap.put(sBaseUrl, retrofit);
+                    sRetrofitMap.put(baseUrl, retrofit);
                 }
             }
         }
         return retrofit;
     }
 
-    private static OkHttpClient getOkHttpClient() {
+    public static OkHttpClient getOkHttpClient() {
         if (sOkhttpClient == null) {
             // OkHttp3
             OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
