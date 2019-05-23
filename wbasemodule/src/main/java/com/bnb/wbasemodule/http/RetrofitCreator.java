@@ -32,8 +32,13 @@ public class RetrofitCreator {
     private static OkHttpClient sOkhttpClient;
 
     public static void init(Context context, String baseUrl) {
+        init(context, baseUrl, null);
+    }
+
+    public static void init(Context context, String baseUrl, OkHttpClient client) {
         sContext = context;
         sBaseUrl = baseUrl;
+        sOkhttpClient = client == null ? getOkHttpClient() : client;
     }
 
     public static Retrofit getRetrofitInstance(OkHttpClient client) {
@@ -47,7 +52,7 @@ public class RetrofitCreator {
                 retrofit = sRetrofitMap.get(baseUrl);
                 if (retrofit == null) {
                     retrofit = new Retrofit.Builder()
-                            .client(client == null ? getOkHttpClient() : client)
+                            .client(client == null ? sOkhttpClient : client)
                             .baseUrl(baseUrl)
                             .addConverterFactory(GsonConverterFactory.create())
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
