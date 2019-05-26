@@ -105,8 +105,6 @@ public class RetrofitCreator {
             } catch (KeyManagementException e) {
 
             }
-            sOkhttpClient = okHttpBuilder.build();
-
         }
         return sOkhttpClient;
     }
