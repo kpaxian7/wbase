@@ -65,47 +65,45 @@ public class RetrofitCreator {
     }
 
     public static OkHttpClient getOkHttpClient() {
-        if (sOkhttpClient == null) {
-            // OkHttp3
-            OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
-            if (AppUtils.isDebug()) {
-                okHttpBuilder.addInterceptor(new LoggerInterceptor());
-            }
-            okHttpBuilder.retryOnConnectionFailure(false);
-            try {
-                final X509TrustManager trustManager = new X509TrustManager() {
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                    }
-
-                    @Override
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
-                };
-
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, new TrustManager[]{trustManager}, new SecureRandom());
-                SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
-                okHttpBuilder
-                        .sslSocketFactory(sslSocketFactory, trustManager)
-                        .hostnameVerifier(new HostnameVerifier() {
-                            @Override
-                            public boolean verify(String hostname, SSLSession session) {
-                                return true;
-                            }
-                        })
-                        .build();
-            } catch (NoSuchAlgorithmException e) {
-
-            } catch (KeyManagementException e) {
-
-            }
+        // OkHttp3
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
+        if (AppUtils.isDebug()) {
+            okHttpBuilder.addInterceptor(new LoggerInterceptor());
         }
-        return sOkhttpClient;
+        okHttpBuilder.retryOnConnectionFailure(false);
+        try {
+            final X509TrustManager trustManager = new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+            SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
+            okHttpBuilder
+                    .sslSocketFactory(sslSocketFactory, trustManager)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    })
+                    .build();
+        } catch (NoSuchAlgorithmException e) {
+
+        } catch (KeyManagementException e) {
+
+        }
+        return okHttpBuilder.build();
     }
 }
