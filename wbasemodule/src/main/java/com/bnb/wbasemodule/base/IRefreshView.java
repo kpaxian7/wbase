@@ -1,10 +1,10 @@
 package com.bnb.wbasemodule.base;
 
-import com.bnb.wbasemodule.bean.BaseListBean;
+import java.util.List;
 
 public interface IRefreshView<D> {
 
-    void getListDataSuc(BaseListBean<D> bean);
+    void getListDataSuc(List<D> dataArr);
 
     void getListDataFail();
 }
